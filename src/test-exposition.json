@@ -1,0 +1,124 @@
+{
+    "expositionToc": [
+        [
+            "How to upload an audio recording",
+            "/view/249652/249653"
+        ]
+    ],
+    "expositionWeaves": [
+        {
+            "weaveTitle": "How to upload an audio recording",
+            "weaveTools": [
+                {
+                    "size": {
+                        "height": 33,
+                        "width": 687
+                    },
+                    "toolContent": {
+                        "tag": "TextContent",
+                        "textToolContent": "This is a demonstration of how to upload an audio track on the RC,\nresulting in a player like this:"
+                    },
+                    "toolMediaFile": null,
+                    "toolId": "249743",
+                    "position": {
+                        "left": 53,
+                        "top": 50
+                    }
+                },
+                {
+                    "size": {
+                        "height": 165,
+                        "width": 687
+                    },
+                    "toolContent": {
+                        "tag": "TextContent",
+                        "textToolContent": "After you upload an audio track, the page will at first show the text:\n\n**Transcoding job for media file \"...\" not started yet. Please wait.**\n\nThis means the RC is converting it to make loading the page faster. If\nit is a large file, it may take a couple of minutes.\n\n "
+                    },
+                    "toolMediaFile": null,
+                    "toolId": "249744",
+                    "position": {
+                        "left": 53,
+                        "top": 673
+                    }
+                },
+                {
+                    "size": {
+                        "height": 150,
+                        "width": 687
+                    },
+                    "toolContent": {
+                        "tag": "TextContent",
+                        "textToolContent": "To upload audio, drag an **audio tool** onto the RC canvas, and choose\nan audio file from you harddisk.\n\n \n\n*click on this image to see a demo*"
+                    },
+                    "toolMediaFile": null,
+                    "toolId": "249745",
+                    "position": {
+                        "left": 53,
+                        "top": 167
+                    }
+                },
+                {
+                    "size": {
+                        "height": 248,
+                        "width": 687
+                    },
+                    "toolContent": {
+                        "tag": "TextContent",
+                        "textToolContent": "You can change the width of the audio tool, by resizing the green\nborders. It is not possible to change the height of the player.\n\n \n\nFor more info on the audio player, please refer to the **extended\nguide**:\n\n[&gt; extended guide, audio\ntool](https://guide.researchcatalogue.net/#audio-tool)\n\n \n\nTIP: If you want to import a CD track, you will first have to \"rip\" it\nas a wav or mp3.  Browsers do not allow you to open an audio track from\nCD. You can do this with either iTunes or Windows Media Player."
+                    },
+                    "toolMediaFile": null,
+                    "toolId": "249747",
+                    "position": {
+                        "left": 53,
+                        "top": 804
+                    }
+                },
+                {
+                    "size": {
+                        "height": 401,
+                        "width": 643
+                    },
+                    "toolContent": {
+                        "tag": "VideoContent",
+                        "videoUrl": "https://media.researchcatalogue.net/rc/derivative/24/ac/10/0b/24ac100b74d65c7710f6c31480dba5d5.mp4?t=20754c91bf23dfa3cc60b6fea203a70a&e=1553873100"
+                    },
+                    "toolMediaFile": "media/249661.mp4",
+                    "toolId": "249661",
+                    "position": {
+                        "left": 52,
+                        "top": 263
+                    }
+                },
+                {
+                    "size": {
+                        "height": 148,
+                        "width": 615
+                    },
+                    "toolContent": {
+                        "tag": "AudioContent",
+                        "audioUrl": "https://media.researchcatalogue.net/rc/derivative/6a/5a/26/cd/6a5a26cd6fa6148340da132662007ab6.mp3?t=4f3cf05e1ddf9d86f90003d2a6b83cd9&e=1553873100"
+                    },
+                    "toolMediaFile": "media/249654.mp3",
+                    "toolId": "249654",
+                    "position": {
+                        "left": 53,
+                        "top": 82
+                    }
+                }
+            ],
+            "weaveUrl": "/view/249652/249653"
+        }
+    ],
+    "expositionMetaData": {
+        "metaKeywords": [
+            ""
+        ],
+        "metaDate": "07/02/2016",
+        "metaTitle": "How to upload an audio recording",
+        "metaExpMainUrl": "https://www.researchcatalogue.net/view/249652/249653",
+        "metaAuthors": [
+            "Casper Schipper"
+        ]
+    },
+    "expositionId": "249652"
+}
