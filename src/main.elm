@@ -49,8 +49,7 @@ type alias Exposition =
 
 
 type alias Weave =
-    { weaveId : String
-    , weaveTitle : String
+    { weaveTitle : String
     , weaveUrl : String
     , weaveTools : List Tool
     }
@@ -248,7 +247,56 @@ viewExposition model =
             text "Loading..."
 
         Success exposition ->
-            div [] [ text <| "title =" ++ getTitle exposition ]
+            viewExpositionMeta exposition.expositionMetaData
+
+
+metaToStringList : ExpositionMetaData -> List (List String)
+metaToStringList meta =
+    [ [ "title ", meta.metaTitle ]
+    , [ "date ", meta.metaDate ]
+    , [ "authors ", String.join " " meta.metaAuthors ]
+    , [ "keywords ", String.join " " meta.metaKeywords ]
+    , [ "exp url ", meta.metaExpMainUrl ]
+    ]
+
+
+makeCell : String -> Html Msg
+makeCell txt =
+    td [] [ text txt ]
+
+
+makeRow : List (Html Msg) -> Html Msg
+makeRow tds =
+    tr [] tds
+
+
+makeTable : List (Html Msg) -> Html Msg
+makeTable trs =
+    table [] trs
+
+
+tableHelper : List (List String) -> Html Msg
+tableHelper lst =
+    -- first turn strings into cells
+    let
+        cells =
+            List.map (List.map makeCell) lst
+    in
+    -- then turn list of cell list into rows
+    let
+        rows =
+            List.map makeRow cells
+    in
+    -- finally make a table out of the rows
+    makeTable rows
+
+
+viewExpositionMeta : ExpositionMetaData -> Html Msg
+viewExpositionMeta meta =
+    div []
+        [ h1 [] [ text "Exposition Metadata" ]
+        , tableHelper (metaToStringList meta)
+        ]
 
 
 getTitle : Exposition -> String
@@ -301,7 +349,6 @@ decodeWeave =
             list decodeTool
     in
     succeed Weave
-        |> required "weaveId" string
         |> required "weaveTitle" string
         |> required "weaveUrl" string
         |> required "weaveTools" decodeTools
@@ -342,7 +389,7 @@ decodeSize =
 
 decodeContent : Decoder ToolContent
 decodeContent =
-    field "Tag" string
+    field "tag" string
         |> Json.Decode.andThen decodeContentHelp
 
 
