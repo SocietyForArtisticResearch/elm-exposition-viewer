@@ -7,6 +7,8 @@ import Html.Events exposing (..)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map, string, succeed)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
+import Json.Encode
+import VirtualDom
 
 
 
@@ -143,7 +145,7 @@ init _ =
 getExpositionJSON : Cmd Msg
 getExpositionJSON =
     Http.get
-        { url = "http://localhost:8000/src/test-exposition.json"
+        { url = "test-exposition.json"
         , expect = Http.expectJson GotExposition decodeExposition
         }
 
@@ -247,7 +249,73 @@ viewExposition model =
             text "Loading..."
 
         Success exposition ->
-            viewExpositionMeta exposition.expositionMetaData
+            div [ id "exposition-content" ]
+                [ viewExpositionMeta exposition.expositionMetaData
+                , viewExpositionContent exposition
+                ]
+
+
+viewExpositionContent : Exposition -> Html Msg
+viewExpositionContent exposition =
+    div [ class "exposition" ]
+        (List.map viewWeave exposition.expositionWeaves)
+
+
+viewWeave : Weave -> Html Msg
+viewWeave weave =
+    div [ class "weave" ]
+        (List.append
+            [ h1 [] [ i [] [ text weave.weaveTitle ] ] ]
+            (List.map viewTool weave.weaveTools)
+        )
+
+
+maybeIntToString : Maybe Int -> String
+maybeIntToString value =
+    Maybe.withDefault "null" <| Maybe.map String.fromInt value
+
+
+positionToString : Position -> String
+positionToString posi =
+    case posi of
+        Position pos ->
+            let
+                ( x, y ) =
+                    ( maybeIntToString pos.x, maybeIntToString pos.y )
+            in
+            "x = " ++ x ++ ", y = " ++ y
+
+
+sizeToString : Size -> String
+sizeToString sizi =
+    case sizi of
+        Size size ->
+            let
+                ( w, h ) =
+                    ( maybeIntToString size.width, maybeIntToString size.height )
+            in
+            "width = " ++ w ++ "hieght = " ++ h
+
+
+viewTool : Tool -> Html Msg
+viewTool tool =
+    let
+        toolProperties =
+            [ tool.toolId
+            , positionToString tool.position
+            , sizeToString tool.size
+            ]
+
+        size =
+            tool.size
+
+        makeUlOfProperties properties =
+            ul [] (List.map (\property -> li [] [ text property ]) properties)
+    in
+    div [ class "tool" ]
+        [ makeUlOfProperties toolProperties
+        , viewToolContent tool.toolContent size
+        ]
 
 
 metaToStringList : ExpositionMetaData -> List (List String)
@@ -297,6 +365,53 @@ viewExpositionMeta meta =
         [ h1 [] [ text "Exposition Metadata" ]
         , tableHelper (metaToStringList meta)
         ]
+
+
+innerHtml : String -> Html.Attribute msg
+innerHtml =
+    VirtualDom.property "innerHTML" << Json.Encode.string
+
+
+viewToolContent : ToolContent -> Size -> Html Msg
+viewToolContent toolContent size =
+    let
+        getWidth =
+            case size of
+                Size x ->
+                    x.width
+
+        getHeight =
+            case size of
+                Size x ->
+                    x.height
+    in
+    case toolContent of
+        TextContent textcontent ->
+            div [] [ text textcontent ]
+
+        ImageContent imageurl ->
+            img [ attribute "src" imageurl ] []
+
+        VideoContent videourl ->
+            let
+                w =
+                    Maybe.withDefault 400 getWidth
+
+                h =
+                    Maybe.withDefault 300 getHeight
+            in
+            video [ width w, height h, controls True ]
+                [ source
+                    [ attribute "src" videourl ]
+                    []
+                , text "Your browser does not support <video>"
+                ]
+
+        AudioContent audiourl ->
+            audio [ controls True ]
+                [ source [ attribute "src" audiourl ] []
+                , text "Your browser does not support <audio>"
+                ]
 
 
 getTitle : Exposition -> String
