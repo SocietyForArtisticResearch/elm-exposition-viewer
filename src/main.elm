@@ -8,6 +8,7 @@ import Http
 import Json.Decode exposing (Decoder, field, int, list, map, string, succeed)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode
+import Markdown
 import VirtualDom
 
 
@@ -294,7 +295,7 @@ sizeToString sizi =
                 ( w, h ) =
                     ( maybeIntToString size.width, maybeIntToString size.height )
             in
-            "width = " ++ w ++ "hieght = " ++ h
+            "width = " ++ w ++ " height = " ++ h
 
 
 viewTool : Tool -> Html Msg
@@ -312,9 +313,8 @@ viewTool tool =
         makeUlOfProperties properties =
             ul [] (List.map (\property -> li [] [ text property ]) properties)
     in
-    div [ class "tool" ]
-        [ makeUlOfProperties toolProperties
-        , viewToolContent tool.toolContent size
+    div [ class "tool", title <| String.join " " toolProperties ]
+        [ viewToolContent tool.toolContent size
         ]
 
 
@@ -387,7 +387,7 @@ viewToolContent toolContent size =
     in
     case toolContent of
         TextContent textcontent ->
-            div [] [ text textcontent ]
+            div [] <| Markdown.toHtml Nothing textcontent
 
         ImageContent imageurl ->
             img [ attribute "src" imageurl ] []
