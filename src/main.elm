@@ -458,3 +458,16 @@ decodeContentHelp tag =
 
         _ ->
             Json.Decode.fail <| "Trying to decode, but tool type"
+
+
+
+-- SORTING / STRUCTURING
+
+
+sortByY : List Tool -> List Tool
+sortByY toolList =
+    let
+        getY (Position ( x, y )) =
+            y
+    in
+    List.sortBy getY toolList
