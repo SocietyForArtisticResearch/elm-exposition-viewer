@@ -9,10 +9,10 @@ import Json.Decode exposing (Decoder, field, int, list, map, string, succeed)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode
 import Markdown
-import VirtualDom
 
 
 
+-- This takes a parsed RC exposition and turns it into HTML.
 -- MAIN
 
 
@@ -59,30 +59,11 @@ type alias Weave =
 
 
 type Position
-    = Position
-        { x : Maybe Int
-        , y : Maybe Int
-        }
-
-
-makePosition : Maybe Int -> Maybe Int -> Position
-makePosition a b =
-    Position
-        { x = a
-        , y = b
-        }
+    = Position ( Maybe Int, Maybe Int ) -- x,y
 
 
 type Size
-    = Size
-        { width : Maybe Int
-        , height : Maybe Int
-        }
-
-
-makeSize : Maybe Int -> Maybe Int -> Size
-makeSize a b =
-    Size { width = a, height = b }
+    = Size ( Maybe Int, Maybe Int ) -- w, h
 
 
 type alias TextToolContent =
@@ -108,18 +89,6 @@ type alias Tool =
     , size : Size
     , toolContent : ToolContent
     }
-
-
-
--- makeTool : Maybe String -> String -> Position -> Size -> ToolContent -> Tool
--- makeTool file id position size content =
---     Tool
---         { toolMediaFile = file
---         , toolId = id
---         , position = position
---         , size = size
---         , toolContent = content
---         }
 
 
 type ToolContent
@@ -214,27 +183,9 @@ httpErrorString error =
 view : Model -> Html Msg
 view model =
     div []
-        [ h2 [] [ text "Random Cats" ]
+        [ h2 [] [ text "Exposition Parser" ]
         , viewExposition model
         ]
-
-
-
--- viewGif : Model -> Html Msg
--- viewGif model =
---     case model of
---         Failure ->
---             div []
---                 [ text "I could not load a random cat for some reason. "
---                 , button [ onClick MorePlease ] [ text "Try Again!" ]
---                 ]
---         Loading ->
---             text "Loading..."
---         Success url ->
---             div []
---                 [ button [ onClick MorePlease, style "display" "block" ] [ text "More Please!" ]
---                 , img [ src url ] []
---                 ]
 
 
 viewExposition : Model -> Html Msg
@@ -277,25 +228,21 @@ maybeIntToString value =
 
 
 positionToString : Position -> String
-positionToString posi =
-    case posi of
-        Position pos ->
-            let
-                ( x, y ) =
-                    ( maybeIntToString pos.x, maybeIntToString pos.y )
-            in
-            "x = " ++ x ++ ", y = " ++ y
+positionToString Position ( x, y ) =
+    let
+        pr arg =
+            maybeIntToString arg
+    in
+    "x = " ++ pr x ++ ", y = " ++ pr y
 
 
 sizeToString : Size -> String
-sizeToString sizi =
-    case sizi of
-        Size size ->
-            let
-                ( w, h ) =
-                    ( maybeIntToString size.width, maybeIntToString size.height )
-            in
-            "width = " ++ w ++ " height = " ++ h
+sizeToString Size ( w, h ) =
+    let
+        pr arg =
+            maybeIntToString arg
+    in
+    "w = " ++ pr w ++ ", y = " ++ pr h
 
 
 viewTool : Tool -> Html Msg
@@ -367,11 +314,6 @@ viewExpositionMeta meta =
         ]
 
 
-innerHtml : String -> Html.Attribute msg
-innerHtml =
-    VirtualDom.property "innerHTML" << Json.Encode.string
-
-
 viewToolContent : ToolContent -> Size -> Html Msg
 viewToolContent toolContent size =
     let
@@ -420,12 +362,7 @@ getTitle expo =
 
 
 
--- HTTP
--- getRandomCatGif : Cmd Msg
--- getRandomCatGif =
---     Http.get
---         { url = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cat"
---         , expect = Http.expectJson GotGif gifDecoder
+-- JSON decoders
 
 
 decodeExposition : Decoder Exposition
@@ -482,10 +419,6 @@ decodeTool =
 decodeMaybeInt : String -> Decoder (Maybe Int)
 decodeMaybeInt key =
     Json.Decode.maybe (field key int)
-
-
-
---  optional "width" (Json.map Just int) Nothing --
 
 
 decodePosition : Decoder Position
