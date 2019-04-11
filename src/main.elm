@@ -1,4 +1,4 @@
-module Main exposing (AudioUrl, Exposition, ExpositionMetaData, ImageUrl, Model(..), Msg(..), Position(..), Size(..), TextToolContent, Toc(..), TocEntry(..), Tool, ToolContent(..), VideoUrl, Weave, decodeContent, decodeContentHelp, decodeExposition, decodeMaybeInt, decodeMeta, decodePosition, decodeSize, decodeToc, decodeTocEntry, decodeTool, decodeWeave, getExpositionJSON, getTitle, init, main, makePosition, makeSize, subscriptions, update, view, viewExposition)
+module Main exposing (AudioUrl, Exposition, ExpositionMetaData, ImageUrl, Model(..), Msg(..), Position(..), Size(..), TextToolContent, Toc(..), TocEntry(..), Tool, ToolContent(..), VideoUrl, Weave, decodeContent, decodeContentHelp, decodeExposition, decodeMaybeInt, decodeMeta, decodePosition, decodeSize, decodeToc, decodeTocEntry, decodeTool, decodeWeave, getExpositionJSON, getTitle, init, main, subscriptions, update, view, viewExposition)
 
 import Browser
 import Html exposing (..)
@@ -8,6 +8,7 @@ import Http
 import Json.Decode exposing (Decoder, field, int, list, map, string, succeed)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode
+import List.Extra
 import Markdown
 
 
@@ -115,7 +116,7 @@ init _ =
 getExpositionJSON : Cmd Msg
 getExpositionJSON =
     Http.get
-        { url = "test-exposition.json"
+        { url = "test-exposition2.json"
         , expect = Http.expectJson GotExposition decodeExposition
         }
 
@@ -228,7 +229,7 @@ maybeIntToString value =
 
 
 positionToString : Position -> String
-positionToString Position ( x, y ) =
+positionToString (Position ( x, y )) =
     let
         pr arg =
             maybeIntToString arg
@@ -237,7 +238,7 @@ positionToString Position ( x, y ) =
 
 
 sizeToString : Size -> String
-sizeToString Size ( w, h ) =
+sizeToString (Size ( w, h )) =
     let
         pr arg =
             maybeIntToString arg
@@ -315,18 +316,7 @@ viewExpositionMeta meta =
 
 
 viewToolContent : ToolContent -> Size -> Html Msg
-viewToolContent toolContent size =
-    let
-        getWidth =
-            case size of
-                Size x ->
-                    x.width
-
-        getHeight =
-            case size of
-                Size x ->
-                    x.height
-    in
+viewToolContent toolContent (Size ( toolWidth, toolHeight )) =
     case toolContent of
         TextContent textcontent ->
             div [] <| Markdown.toHtml Nothing textcontent
@@ -337,10 +327,10 @@ viewToolContent toolContent size =
         VideoContent videourl ->
             let
                 w =
-                    Maybe.withDefault 400 getWidth
+                    Maybe.withDefault 400 toolWidth
 
                 h =
-                    Maybe.withDefault 300 getHeight
+                    Maybe.withDefault 300 toolHeight
             in
             video [ width w, height h, controls True ]
                 [ source
@@ -423,6 +413,10 @@ decodeMaybeInt key =
 
 decodePosition : Decoder Position
 decodePosition =
+    let
+        makePosition x y =
+            Position ( x, y )
+    in
     Json.Decode.map2 makePosition
         (decodeMaybeInt "x")
         (decodeMaybeInt "y")
@@ -430,6 +424,10 @@ decodePosition =
 
 decodeSize : Decoder Size
 decodeSize =
+    let
+        makeSize w h =
+            Size ( w, h )
+    in
     Json.Decode.map2 makeSize
         (decodeMaybeInt "width")
         (decodeMaybeInt "height")
@@ -462,12 +460,123 @@ decodeContentHelp tag =
 
 
 -- SORTING / STRUCTURING
+-- Since elm does not have <$> , we use Maybe.map2
+
+
+diff : Position -> Position -> Position
+diff a b =
+    Position ( diffx a b, diffy a b )
+
+
+magnitude : Position -> Maybe Float
+magnitude pos =
+    case pos of
+        Position ( Just x, Just y ) ->
+            let
+                xf =
+                    toFloat x
+
+                yf =
+                    toFloat y
+            in
+            Just (sqrt ((xf * xf) + (yf * yf)))
+
+        Position _ ->
+            Nothing
+
+
+diffx : Position -> Position -> Maybe Int
+diffx a b =
+    case ( a, b ) of
+        ( Position ( x1, _ ), Position ( x2, _ ) ) ->
+            Maybe.map2 (-) x2 x1
+
+
+diffy : Position -> Position -> Maybe Int
+diffy a b =
+    case ( a, b ) of
+        ( Position ( _, y1 ), Position ( _, y2 ) ) ->
+            Maybe.map2 (-) y2 y1
+
+
+
+-- for sorting, we assume all tools without x or y are at 0 (?)
+
+
+getToolX : Tool -> Int
+getToolX tool =
+    case tool.position of
+        Position ( x, _ ) ->
+            Maybe.withDefault 0 x
+
+
+getToolY : Tool -> Int
+getToolY tool =
+    case tool.position of
+        Position ( _, y ) ->
+            Maybe.withDefault 0 y
 
 
 sortByY : List Tool -> List Tool
-sortByY toolList =
+sortByY tools =
+    List.sortBy getToolY tools
+
+
+sortByX : List Tool -> List Tool
+sortByX tools =
+    List.sortBy getToolX tools
+
+
+groupByCollumn : List Tool -> List (List Tool)
+groupByCollumn tools =
     let
-        getY (Position ( x, y )) =
-            y
+        limit =
+            100
+
+        -- this is the limit in pixels
+        sorted =
+            sortByX tools
+
+        isSameCollumn : Tool -> Tool -> Bool
+        isSameCollumn a b =
+            let
+                posa =
+                    a.position
+
+                posb =
+                    b.position
+            in
+            case diffx posa posb of
+                Just x ->
+                    x < limit
+
+                Nothing ->
+                    True
     in
-    List.sortBy getY toolList
+    groupWhileSimplify <| List.Extra.groupWhile isSameCollumn tools
+
+
+
+-- simplyfies the output of List.Extra.groupWhile
+
+
+groupWhileSimplify : List ( a, List a ) -> List (List a)
+groupWhileSimplify list =
+    let
+        packer : ( a, List a ) -> List a
+        packer ( x, xs ) =
+            List.append [ x ] xs
+    in
+    List.map packer list
+
+
+sortByCollumnAndY : List Tool -> List Tool
+sortByCollumnAndY tools =
+    let
+        groupedByCollumn =
+            groupByCollumn tools
+
+        sortedSubGroups =
+            List.map (List.sortBy getToolY) groupedByCollumn
+    in
+    List.concat sortedSubGroups

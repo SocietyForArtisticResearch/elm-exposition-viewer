@@ -5292,6 +5292,9 @@ var author$project$Main$decodeContent = A2(
 	elm$json$Json$Decode$andThen,
 	author$project$Main$decodeContentHelp,
 	A2(elm$json$Json$Decode$field, 'tag', elm$json$Json$Decode$string));
+var author$project$Main$Position = function (a) {
+	return {$: 'Position', a: a};
+};
 var elm$json$Json$Decode$int = _Json_decodeInt;
 var elm$json$Json$Decode$maybe = function (decoder) {
 	return elm$json$Json$Decode$oneOf(
@@ -5305,32 +5308,33 @@ var author$project$Main$decodeMaybeInt = function (key) {
 	return elm$json$Json$Decode$maybe(
 		A2(elm$json$Json$Decode$field, key, elm$json$Json$Decode$int));
 };
-var author$project$Main$Position = function (a) {
-	return {$: 'Position', a: a};
-};
-var author$project$Main$makePosition = F2(
-	function (a, b) {
-		return author$project$Main$Position(
-			{x: a, y: b});
-	});
-var author$project$Main$decodePosition = A3(
-	elm$json$Json$Decode$map2,
-	author$project$Main$makePosition,
-	author$project$Main$decodeMaybeInt('x'),
-	author$project$Main$decodeMaybeInt('y'));
+var author$project$Main$decodePosition = function () {
+	var makePosition = F2(
+		function (x, y) {
+			return author$project$Main$Position(
+				_Utils_Tuple2(x, y));
+		});
+	return A3(
+		elm$json$Json$Decode$map2,
+		makePosition,
+		author$project$Main$decodeMaybeInt('x'),
+		author$project$Main$decodeMaybeInt('y'));
+}();
 var author$project$Main$Size = function (a) {
 	return {$: 'Size', a: a};
 };
-var author$project$Main$makeSize = F2(
-	function (a, b) {
-		return author$project$Main$Size(
-			{height: b, width: a});
-	});
-var author$project$Main$decodeSize = A3(
-	elm$json$Json$Decode$map2,
-	author$project$Main$makeSize,
-	author$project$Main$decodeMaybeInt('width'),
-	author$project$Main$decodeMaybeInt('height'));
+var author$project$Main$decodeSize = function () {
+	var makeSize = F2(
+		function (w, h) {
+			return author$project$Main$Size(
+				_Utils_Tuple2(w, h));
+		});
+	return A3(
+		elm$json$Json$Decode$map2,
+		makeSize,
+		author$project$Main$decodeMaybeInt('width'),
+		author$project$Main$decodeMaybeInt('height'));
+}();
 var author$project$Main$decodeTool = A3(
 	NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 	'toolContent',
@@ -6348,23 +6352,23 @@ var author$project$Main$maybeIntToString = function (value) {
 		'null',
 		A2(elm$core$Maybe$map, elm$core$String$fromInt, value));
 };
-var author$project$Main$positionToString = function (posi) {
-	var pos = posi.a;
-	var _n1 = _Utils_Tuple2(
-		author$project$Main$maybeIntToString(pos.x),
-		author$project$Main$maybeIntToString(pos.y));
+var author$project$Main$positionToString = function (_n0) {
+	var _n1 = _n0.a;
 	var x = _n1.a;
 	var y = _n1.b;
-	return 'x = ' + (x + (', y = ' + y));
+	var pr = function (arg) {
+		return author$project$Main$maybeIntToString(arg);
+	};
+	return 'x = ' + (pr(x) + (', y = ' + pr(y)));
 };
-var author$project$Main$sizeToString = function (sizi) {
-	var size = sizi.a;
-	var _n1 = _Utils_Tuple2(
-		author$project$Main$maybeIntToString(size.width),
-		author$project$Main$maybeIntToString(size.height));
+var author$project$Main$sizeToString = function (_n0) {
+	var _n1 = _n0.a;
 	var w = _n1.a;
 	var h = _n1.b;
-	return 'width = ' + (w + ('hieght = ' + h));
+	var pr = function (arg) {
+		return author$project$Main$maybeIntToString(arg);
+	};
+	return 'w = ' + (pr(w) + (', y = ' + pr(h)));
 };
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
@@ -10554,15 +10558,10 @@ var pablohirafuji$elm_markdown$Markdown$toHtml = F2(
 				A2(pablohirafuji$elm_markdown$Markdown$Block$parse, maybeOptions, rawText)));
 	});
 var author$project$Main$viewToolContent = F2(
-	function (toolContent, size) {
-		var getWidth = function () {
-			var x = size.a;
-			return x.width;
-		}();
-		var getHeight = function () {
-			var x = size.a;
-			return x.height;
-		}();
+	function (toolContent, _n0) {
+		var _n1 = _n0.a;
+		var toolWidth = _n1.a;
+		var toolHeight = _n1.b;
 		switch (toolContent.$) {
 			case 'TextContent':
 				var textcontent = toolContent.a;
@@ -10581,8 +10580,8 @@ var author$project$Main$viewToolContent = F2(
 					_List_Nil);
 			case 'VideoContent':
 				var videourl = toolContent.a;
-				var w = A2(elm$core$Maybe$withDefault, 400, getWidth);
-				var h = A2(elm$core$Maybe$withDefault, 300, getHeight);
+				var w = A2(elm$core$Maybe$withDefault, 400, toolWidth);
+				var h = A2(elm$core$Maybe$withDefault, 300, toolHeight);
 				return A2(
 					elm$html$Html$video,
 					_List_fromArray(
@@ -10652,11 +10651,12 @@ var author$project$Main$viewTool = function (tool) {
 		elm$html$Html$div,
 		_List_fromArray(
 			[
-				elm$html$Html$Attributes$class('tool')
+				elm$html$Html$Attributes$class('tool'),
+				elm$html$Html$Attributes$title(
+				A2(elm$core$String$join, ' ', toolProperties))
 			]),
 		_List_fromArray(
 			[
-				makeUlOfProperties(toolProperties),
 				A2(author$project$Main$viewToolContent, tool.toolContent, size)
 			]));
 };
@@ -10829,7 +10829,7 @@ var author$project$Main$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						elm$html$Html$text('Random Cats')
+						elm$html$Html$text('Exposition Parser')
 					])),
 				author$project$Main$viewExposition(model)
 			]));
