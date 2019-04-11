@@ -4,6 +4,8 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Html.Parser
+import Html.Parser.Util
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map, string, succeed)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
@@ -319,8 +321,9 @@ viewToolContent : ToolContent -> Size -> Html Msg
 viewToolContent toolContent (Size ( toolWidth, toolHeight )) =
     case toolContent of
         TextContent textcontent ->
-            div [] <| Markdown.toHtml Nothing textcontent
+            div [] <| parseHtml textcontent
 
+        --          div [] <| Markdown.toHtml Nothing textcontent
         ImageContent imageurl ->
             img [ attribute "src" imageurl ] []
 
@@ -349,6 +352,24 @@ viewToolContent toolContent (Size ( toolWidth, toolHeight )) =
 getTitle : Exposition -> String
 getTitle expo =
     .expositionId expo
+
+
+
+-- HTML parsing
+
+
+parseHtml : String -> List (Html Msg)
+parseHtml htmlString =
+    let
+        parsed =
+            Html.Parser.run htmlString
+    in
+    case parsed of
+        Ok nodes ->
+            Html.Parser.Util.toVirtualDom nodes
+
+        Err error ->
+            [ div [] [ text "there is some error" ] ]
 
 
 
