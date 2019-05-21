@@ -1,5 +1,6 @@
 module Main exposing (AudioUrl, Exposition, ExpositionMetaData, ImageUrl, Model(..), Msg(..), Position(..), Size(..), TextToolContent, Toc(..), TocEntry(..), Tool, ToolContent(..), VideoUrl, Weave, decodeContent, decodeContentHelp, decodeExposition, decodeMaybeInt, decodeMeta, decodePosition, decodeSize, decodeToc, decodeTocEntry, decodeTool, decodeWeave, getExpositionJSON, getTitle, init, main, subscriptions, update, view, viewExposition)
 
+import Bootstrap.Alert as Alert
 import Bootstrap.CDN as CDN
 import Bootstrap.Grid as Grid
 import Browser
@@ -242,7 +243,10 @@ viewWeaveAsGrid weave =
     in
     div [ class "weave" ]
         (List.append
-            [ h1 [] [ i [] [ text weave.weaveTitle ] ] ]
+            [ Alert.simpleSecondary []
+                [ h2 [] [ text weave.weaveTitle ]
+                ]
+            ]
             [ renderCollumns groupedTools ]
         )
 

@@ -11066,8 +11066,252 @@ var author$project$Main$renderCollumns = function (groupedTools) {
 				makeGridRow(groupedTools)
 			]));
 };
-var elm$html$Html$h1 = _VirtualDom_node('h1');
-var elm$html$Html$i = _VirtualDom_node('i');
+var elm$html$Html$h2 = _VirtualDom_node('h2');
+var rundis$elm_bootstrap$Bootstrap$Alert$Shown = {$: 'Shown'};
+var rundis$elm_bootstrap$Bootstrap$Alert$Config = function (a) {
+	return {$: 'Config', a: a};
+};
+var rundis$elm_bootstrap$Bootstrap$Alert$attrs = F2(
+	function (attributes, _n0) {
+		var configRec = _n0.a;
+		return rundis$elm_bootstrap$Bootstrap$Alert$Config(
+			_Utils_update(
+				configRec,
+				{attributes: attributes}));
+	});
+var rundis$elm_bootstrap$Bootstrap$Alert$children = F2(
+	function (children_, _n0) {
+		var configRec = _n0.a;
+		return rundis$elm_bootstrap$Bootstrap$Alert$Config(
+			_Utils_update(
+				configRec,
+				{children: children_}));
+	});
+var rundis$elm_bootstrap$Bootstrap$Internal$Role$Secondary = {$: 'Secondary'};
+var rundis$elm_bootstrap$Bootstrap$Alert$config = rundis$elm_bootstrap$Bootstrap$Alert$Config(
+	{attributes: _List_Nil, children: _List_Nil, dismissable: elm$core$Maybe$Nothing, role: rundis$elm_bootstrap$Bootstrap$Internal$Role$Secondary, visibility: rundis$elm_bootstrap$Bootstrap$Alert$Shown, withAnimation: false});
+var rundis$elm_bootstrap$Bootstrap$Alert$role = F2(
+	function (role_, _n0) {
+		var configRec = _n0.a;
+		return rundis$elm_bootstrap$Bootstrap$Alert$Config(
+			_Utils_update(
+				configRec,
+				{role: role_}));
+	});
+var elm$html$Html$button = _VirtualDom_node('button');
+var elm$html$Html$span = _VirtualDom_node('span');
+var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
+var rundis$elm_bootstrap$Bootstrap$Alert$Closed = {$: 'Closed'};
+var rundis$elm_bootstrap$Bootstrap$Alert$StartClose = {$: 'StartClose'};
+var rundis$elm_bootstrap$Bootstrap$Alert$clickHandler = F2(
+	function (visibility, configRec) {
+		var handleClick = F2(
+			function (viz, toMsg) {
+				return elm$html$Html$Events$onClick(
+					toMsg(viz));
+			});
+		var _n0 = configRec.dismissable;
+		if (_n0.$ === 'Just') {
+			var dismissMsg = _n0.a;
+			return _List_fromArray(
+				[
+					configRec.withAnimation ? A2(handleClick, rundis$elm_bootstrap$Bootstrap$Alert$StartClose, dismissMsg) : A2(handleClick, rundis$elm_bootstrap$Bootstrap$Alert$Closed, dismissMsg)
+				]);
+		} else {
+			return _List_Nil;
+		}
+	});
+var rundis$elm_bootstrap$Bootstrap$Alert$injectButton = F2(
+	function (btn, children_) {
+		if (children_.b) {
+			var head = children_.a;
+			var tail = children_.b;
+			return A2(
+				elm$core$List$cons,
+				head,
+				A2(elm$core$List$cons, btn, tail));
+		} else {
+			return _List_fromArray(
+				[btn]);
+		}
+	});
+var rundis$elm_bootstrap$Bootstrap$Alert$isDismissable = function (configRec) {
+	var _n0 = configRec.dismissable;
+	if (_n0.$ === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var rundis$elm_bootstrap$Bootstrap$Alert$maybeAddDismissButton = F3(
+	function (visibilty, configRec, children_) {
+		return rundis$elm_bootstrap$Bootstrap$Alert$isDismissable(configRec) ? A2(
+			rundis$elm_bootstrap$Bootstrap$Alert$injectButton,
+			A2(
+				elm$html$Html$button,
+				_Utils_ap(
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$type_('button'),
+							elm$html$Html$Attributes$class('close'),
+							A2(elm$html$Html$Attributes$attribute, 'aria-label', 'close')
+						]),
+					A2(rundis$elm_bootstrap$Bootstrap$Alert$clickHandler, visibilty, configRec)),
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$span,
+						_List_fromArray(
+							[
+								A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true')
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('×')
+							]))
+					])),
+			children_) : children_;
+	});
+var elm$core$List$concat = function (lists) {
+	return A3(elm$core$List$foldr, elm$core$List$append, _List_Nil, lists);
+};
+var elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var elm$core$Tuple$second = function (_n0) {
+	var y = _n0.b;
+	return y;
+};
+var elm$html$Html$Attributes$classList = function (classes) {
+	return elm$html$Html$Attributes$class(
+		A2(
+			elm$core$String$join,
+			' ',
+			A2(
+				elm$core$List$map,
+				elm$core$Tuple$first,
+				A2(elm$core$List$filter, elm$core$Tuple$second, classes))));
+};
+var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
+var rundis$elm_bootstrap$Bootstrap$Internal$Role$toClass = F2(
+	function (prefix, role) {
+		return elm$html$Html$Attributes$class(
+			prefix + ('-' + function () {
+				switch (role.$) {
+					case 'Primary':
+						return 'primary';
+					case 'Secondary':
+						return 'secondary';
+					case 'Success':
+						return 'success';
+					case 'Info':
+						return 'info';
+					case 'Warning':
+						return 'warning';
+					case 'Danger':
+						return 'danger';
+					case 'Light':
+						return 'light';
+					default:
+						return 'dark';
+				}
+			}()));
+	});
+var rundis$elm_bootstrap$Bootstrap$Alert$viewAttributes = F2(
+	function (visibility, configRec) {
+		var visibiltyAttributes = _Utils_eq(visibility, rundis$elm_bootstrap$Bootstrap$Alert$Closed) ? _List_fromArray(
+			[
+				A2(elm$html$Html$Attributes$style, 'display', 'none')
+			]) : _List_Nil;
+		var animationAttributes = function () {
+			if (configRec.withAnimation) {
+				var _n0 = configRec.dismissable;
+				if (_n0.$ === 'Just') {
+					var dismissMsg = _n0.a;
+					return _List_fromArray(
+						[
+							A2(
+							elm$html$Html$Events$on,
+							'transitionend',
+							elm$json$Json$Decode$succeed(
+								dismissMsg(rundis$elm_bootstrap$Bootstrap$Alert$Closed)))
+						]);
+				} else {
+					return _List_Nil;
+				}
+			} else {
+				return _List_Nil;
+			}
+		}();
+		var alertAttributes = _List_fromArray(
+			[
+				A2(elm$html$Html$Attributes$attribute, 'role', 'alert'),
+				elm$html$Html$Attributes$classList(
+				_List_fromArray(
+					[
+						_Utils_Tuple2('alert', true),
+						_Utils_Tuple2(
+						'alert-dismissible',
+						rundis$elm_bootstrap$Bootstrap$Alert$isDismissable(configRec)),
+						_Utils_Tuple2('fade', configRec.withAnimation),
+						_Utils_Tuple2(
+						'show',
+						_Utils_eq(visibility, rundis$elm_bootstrap$Bootstrap$Alert$Shown))
+					])),
+				A2(rundis$elm_bootstrap$Bootstrap$Internal$Role$toClass, 'alert', configRec.role)
+			]);
+		return elm$core$List$concat(
+			_List_fromArray(
+				[configRec.attributes, alertAttributes, visibiltyAttributes, animationAttributes]));
+	});
+var rundis$elm_bootstrap$Bootstrap$Alert$view = F2(
+	function (visibility, _n0) {
+		var configRec = _n0.a;
+		return A2(
+			elm$html$Html$div,
+			A2(rundis$elm_bootstrap$Bootstrap$Alert$viewAttributes, visibility, configRec),
+			A3(rundis$elm_bootstrap$Bootstrap$Alert$maybeAddDismissButton, visibility, configRec, configRec.children));
+	});
+var rundis$elm_bootstrap$Bootstrap$Alert$simple = F3(
+	function (role_, attributes, children_) {
+		return A2(
+			rundis$elm_bootstrap$Bootstrap$Alert$view,
+			rundis$elm_bootstrap$Bootstrap$Alert$Shown,
+			A2(
+				rundis$elm_bootstrap$Bootstrap$Alert$children,
+				children_,
+				A2(
+					rundis$elm_bootstrap$Bootstrap$Alert$attrs,
+					attributes,
+					A2(rundis$elm_bootstrap$Bootstrap$Alert$role, role_, rundis$elm_bootstrap$Bootstrap$Alert$config))));
+	});
+var rundis$elm_bootstrap$Bootstrap$Alert$simpleSecondary = rundis$elm_bootstrap$Bootstrap$Alert$simple(rundis$elm_bootstrap$Bootstrap$Internal$Role$Secondary);
 var author$project$Main$viewWeaveAsGrid = function (weave) {
 	var groupedTools = author$project$Main$groupByCollumn(weave.weaveTools);
 	var _n0 = A2(
@@ -11085,12 +11329,12 @@ var author$project$Main$viewWeaveAsGrid = function (weave) {
 			_List_fromArray(
 				[
 					A2(
-					elm$html$Html$h1,
+					rundis$elm_bootstrap$Bootstrap$Alert$simpleSecondary,
 					_List_Nil,
 					_List_fromArray(
 						[
 							A2(
-							elm$html$Html$i,
+							elm$html$Html$h2,
 							_List_Nil,
 							_List_fromArray(
 								[
@@ -11159,6 +11403,7 @@ var author$project$Main$tableHelper = function (lst) {
 	var rows = A2(elm$core$List$map, author$project$Main$makeRow, cells);
 	return author$project$Main$makeTable(rows);
 };
+var elm$html$Html$h1 = _VirtualDom_node('h1');
 var author$project$Main$viewExpositionMeta = function (meta) {
 	return A2(
 		elm$html$Html$div,
@@ -11176,25 +11421,7 @@ var author$project$Main$viewExpositionMeta = function (meta) {
 				author$project$Main$metaToStringList(meta))
 			]));
 };
-var elm$html$Html$button = _VirtualDom_node('button');
 var elm$html$Html$Attributes$id = elm$html$Html$Attributes$stringProperty('id');
-var elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			elm$virtual_dom$VirtualDom$on,
-			event,
-			elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		elm$html$Html$Events$on,
-		'click',
-		elm$json$Json$Decode$succeed(msg));
-};
 var author$project$Main$viewExposition = function (model) {
 	switch (model.$) {
 		case 'Failure':
@@ -11233,7 +11460,6 @@ var author$project$Main$viewExposition = function (model) {
 					]));
 	}
 };
-var elm$html$Html$h2 = _VirtualDom_node('h2');
 var author$project$Main$view = function (model) {
 	return A2(
 		elm$html$Html$div,
