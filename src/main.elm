@@ -369,7 +369,7 @@ parseHtml htmlString =
             Html.Parser.Util.toVirtualDom nodes
 
         Err error ->
-            [ div [] [ text "there is some error" ] ]
+            [ div [] [ text "this was non-valid HTML" ] ]
 
 
 
