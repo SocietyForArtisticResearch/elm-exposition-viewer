@@ -1,5 +1,7 @@
 module Main exposing (AudioUrl, Exposition, ExpositionMetaData, ImageUrl, Model(..), Msg(..), Position(..), Size(..), TextToolContent, Toc(..), TocEntry(..), Tool, ToolContent(..), VideoUrl, Weave, decodeContent, decodeContentHelp, decodeExposition, decodeMaybeInt, decodeMeta, decodePosition, decodeSize, decodeToc, decodeTocEntry, decodeTool, decodeWeave, getExpositionJSON, getTitle, init, main, subscriptions, update, view, viewExposition)
 
+import Bootstrap.CDN as CDN
+import Bootstrap.Grid as Grid
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -213,15 +215,35 @@ viewExposition model =
 viewExpositionContent : Exposition -> Html Msg
 viewExpositionContent exposition =
     div [ class "exposition" ]
-        (List.map viewWeave exposition.expositionWeaves)
+        (List.map viewWeaveAsGrid exposition.expositionWeaves)
 
 
 viewWeave : Weave -> Html Msg
 viewWeave weave =
+    let
+        sortedTools =
+            sortByCollumnAndY weave.weaveTools
+    in
     div [ class "weave" ]
         (List.append
             [ h1 [] [ i [] [ text weave.weaveTitle ] ] ]
-            (List.map viewTool weave.weaveTools)
+            (List.map viewTool sortedTools)
+        )
+
+
+viewWeaveAsGrid : Weave -> Html Msg
+viewWeaveAsGrid weave =
+    let
+        groupedTools =
+            groupByCollumn weave.weaveTools
+
+        _ =
+            Debug.log "groupedTools length =" <| List.length groupedTools
+    in
+    div [ class "weave" ]
+        (List.append
+            [ h1 [] [ i [] [ text weave.weaveTitle ] ] ]
+            [ renderCollumns groupedTools ]
         )
 
 
@@ -439,8 +461,8 @@ decodePosition =
             Position ( x, y )
     in
     Json.Decode.map2 makePosition
-        (decodeMaybeInt "x")
-        (decodeMaybeInt "y")
+        (decodeMaybeInt "left")
+        (decodeMaybeInt "top")
 
 
 decodeSize : Decoder Size
@@ -566,15 +588,46 @@ groupByCollumn tools =
 
                 posb =
                     b.position
+
+                -- _ =
+                --     Debug.log "position tool a =" posa
+                -- _ =
+                --     Debug.log "position tool b =" posb
             in
             case diffx posa posb of
                 Just x ->
-                    x < limit
+                    let
+                        _ =
+                            Debug.log "x distance =" x
+                    in
+                    abs x < limit
 
                 Nothing ->
+                    let
+                        _ =
+                            Debug.log "hmm no distance" (diffx posa posb)
+                    in
                     True
     in
     groupWhileSimplify <| List.Extra.groupWhile isSameCollumn tools
+
+
+renderCollumns : List (List Tool) -> Html Msg
+renderCollumns groupedTools =
+    let
+        makeGridCol : List Tool -> Grid.Column Msg
+        makeGridCol tools =
+            Grid.col [] (List.map viewTool tools)
+
+        makeGridRow : List (List Tool) -> Html Msg
+        makeGridRow grouped =
+            Grid.row [] (List.map makeGridCol grouped)
+    in
+    Grid.container [] <|
+        [ CDN.stylesheet
+        , makeGridRow
+            groupedTools
+        ]
 
 
 
