@@ -6246,7 +6246,7 @@ var elm$http$Http$get = function (r) {
 var author$project$Main$getExpositionJSON = elm$http$Http$get(
 	{
 		expect: A2(elm$http$Http$expectJson, author$project$Main$GotExposition, author$project$Main$decodeExposition),
-		url: 'test-exposition2.json'
+		url: 'photography.json'
 	});
 var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(author$project$Main$Loading, author$project$Main$getExpositionJSON);
@@ -6418,28 +6418,34 @@ var elm_community$list_extra$List$Extra$groupWhile = F2(
 	});
 var author$project$Main$groupByCollumn = function (tools) {
 	var sorted = author$project$Main$sortByX(tools);
-	var limit = 100;
+	var limit = 50;
 	var isSameCollumn = F2(
 		function (a, b) {
 			var posb = b.position;
 			var posa = a.position;
-			var _n0 = A2(author$project$Main$diffx, posa, posb);
-			if (_n0.$ === 'Just') {
-				var x = _n0.a;
-				var _n1 = A2(elm$core$Debug$log, 'x distance =', x);
+			var _n1 = A2(author$project$Main$diffx, posa, posb);
+			if (_n1.$ === 'Just') {
+				var x = _n1.a;
 				return _Utils_cmp(
 					elm$core$Basics$abs(x),
 					limit) < 0;
 			} else {
-				var _n2 = A2(
-					elm$core$Debug$log,
-					'hmm no distance',
-					A2(author$project$Main$diffx, posa, posb));
 				return true;
 			}
 		});
-	return author$project$Main$groupWhileSimplify(
+	var grouped = author$project$Main$groupWhileSimplify(
 		A2(elm_community$list_extra$List$Extra$groupWhile, isSameCollumn, tools));
+	var _n0 = A2(
+		elm$core$Debug$log,
+		'grouped debug',
+		A2(
+			elm$core$List$map,
+			elm$core$List$map(
+				function ($) {
+					return $.position;
+				}),
+			grouped));
+	return grouped;
 };
 var elm$core$Maybe$map = F2(
 	function (f, maybe) {

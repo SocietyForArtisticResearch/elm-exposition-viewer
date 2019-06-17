@@ -121,7 +121,7 @@ init _ =
 getExpositionJSON : Cmd Msg
 getExpositionJSON =
     Http.get
-        { url = "test-exposition2.json"
+        { url = "photography.json"
         , expect = Http.expectJson GotExposition decodeExposition
         }
 
@@ -578,7 +578,7 @@ groupByCollumn : List Tool -> List (List Tool)
 groupByCollumn tools =
     let
         limit =
-            100
+            50
 
         -- this is the limit in pixels
         sorted =
@@ -592,28 +592,22 @@ groupByCollumn tools =
 
                 posb =
                     b.position
-
-                -- _ =
-                --     Debug.log "position tool a =" posa
-                -- _ =
-                --     Debug.log "position tool b =" posb
             in
             case diffx posa posb of
                 Just x ->
-                    let
-                        _ =
-                            Debug.log "x distance =" x
-                    in
                     abs x < limit
 
                 Nothing ->
-                    let
-                        _ =
-                            Debug.log "hmm no distance" (diffx posa posb)
-                    in
                     True
     in
-    groupWhileSimplify <| List.Extra.groupWhile isSameCollumn tools
+    let
+        grouped =
+            groupWhileSimplify <| List.Extra.groupWhile isSameCollumn tools
+
+        _ =
+            Debug.log "grouped debug" (List.map (List.map .position) grouped)
+    in
+    grouped
 
 
 renderCollumns : List (List Tool) -> Html Msg
